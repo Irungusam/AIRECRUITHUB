@@ -11,7 +11,6 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemi
  * @param {string} resumeText - Extracted text from the resume file
  * @returns {Object} Structured resume data
  */
-// In utils/gemini.js
 export const parseResume = async (resumeText) => {
   try {
     // More detailed and structured prompt
@@ -23,6 +22,9 @@ export const parseResume = async (resumeText) => {
       - For missing information, use null or empty arrays
       - Normalize job titles to industry-standard terms where appropriate
       - Identify both explicit and implicit skills
+      - Distinguish between technical and soft skills
+      - Extract project details and accomplishments wherever possible
+      - Calculate total years of experience
       
       OUTPUT FORMAT (JSON only):
       {
@@ -40,10 +42,13 @@ export const parseResume = async (resumeText) => {
             "company": "Company Name",
             "location": "City, State",
             "duration": "Start Date - End Date",
+            "duration_months": 24, 
             "responsibilities": ["Responsibility 1", "Responsibility 2"],
-            "achievements": ["Achievement 1", "Achievement 2"]
+            "achievements": ["Achievement 1", "Achievement 2"],
+            "technologies_used": ["Tech 1", "Tech 2"]
           }
         ],
+        "total_experience_years": 5,
         "education": [
           {
             "degree": "Degree Name",
@@ -57,7 +62,8 @@ export const parseResume = async (resumeText) => {
         "skills": {
           "technical": ["Skill 1", "Skill 2"],
           "soft": ["Skill 1", "Skill 2"],
-          "languages": ["Language 1", "Language 2"]
+          "languages": ["Language 1", "Language 2"],
+          "tools": ["Tool 1", "Tool 2"]
         },
         "certifications": [
           {
@@ -72,9 +78,15 @@ export const parseResume = async (resumeText) => {
             "name": "Project Name",
             "description": "Brief description",
             "technologies": ["Tech 1", "Tech 2"],
-            "url": "Project URL if available"
+            "url": "Project URL if available",
+            "achievements": ["Achievement 1"]
           }
-        ]
+        ],
+        "career_progression": {
+          "trajectory": "Ascending/Stable/Varied",
+          "job_changes": 3,
+          "average_tenure_months": 24
+        }
       }
       
       RESUME TEXT:
@@ -94,7 +106,7 @@ export const parseResume = async (resumeText) => {
     });
 
     let aiResponse = response.data.candidates[0]?.content?.parts[0]?.text;
-    
+
     if (!aiResponse) {
       throw new Error("Empty response from Gemini API");
     }
@@ -123,18 +135,17 @@ export const parseResume = async (resumeText) => {
 };
 
 /**
- * Screen a Resume for Job Match
+ * Screen a Resume for Job Match - Enhanced version with more detailed analysis
  * @param {string} resumeText - Parsed resume text
  * @param {string} jobDescription - The job description
- * @returns {Object} AI-generated match score & feedback
+ * @returns {Object} AI-generated match score & comprehensive feedback
  */
-// In utils/gemini.js
 export const screenResume = async (resumeText, jobDescription) => {
   try {
     const prompt = `
       You are an expert ATS (Applicant Tracking System) AI designed to evaluate resumes against job descriptions.
       
-      Task: Analyze the provided resume against the job description and create a comprehensive assessment.
+      Task: Analyze the provided resume against the job description and create a comprehensive assessment with actionable insights.
       
       ASSESSMENT CRITERIA:
       1. Skills match (required vs nice-to-have vs missing)
@@ -143,6 +154,10 @@ export const screenResume = async (resumeText, jobDescription) => {
       4. Industry knowledge
       5. Cultural/soft skills fit
       6. Keyword optimization
+      7. Career trajectory alignment
+      8. Growth potential
+      9. Leadership capabilities
+      10. Communication style evidence
       
       OUTPUT FORMAT (JSON only):
       {
@@ -152,29 +167,35 @@ export const screenResume = async (resumeText, jobDescription) => {
             "skill": "JavaScript", 
             "importance": "high/medium/low", 
             "match": true/false,
-            "confidence": "high/medium/low"
+            "confidence": "high/medium/low",
+            "evidence": "Brief evidence from resume",
+            "proficiency_level": "beginner/intermediate/expert/undetermined"
           }
         ],
         "experience_match": [
           {
             "requirement": "5+ years in web development", 
             "matched": true/false, 
-            "comments": "Detailed comparison with resume"
+            "years_difference": 1, // Positive means exceeds, negative means under requirement
+            "comments": "Detailed comparison with resume",
+            "relevance_score": 90 // How relevant the experience is to the role
           }
         ],
         "education_match": [
           {
             "requirement": "Bachelor's degree requirement", 
             "matched": true/false,
-            "comments": "Details from resume"
+            "comments": "Details from resume",
+            "relevance_of_field": "high/medium/low"
           }
         ],
-        "keyword_analysis": {
-          "job_keywords": ["keyword1", "keyword2"],
-          "resume_keywords": ["keyword1", "keyword3"],
-          "missing_keywords": ["keyword2"],
-          "keyword_match_percentage": 85
+        
+        "career_alignment": {
+          "score": 80,
+          "analysis": "Detailed analysis of career trajectory vs job requirements",
+          "potentialGrowth": ["Area 1", "Area 2"]
         },
+        "candidate_type": "Specialist/Generalist/Leader/Innovator/Executor",
         "strengths": [
           "Detailed strength point 1",
           "Detailed strength point 2"
@@ -183,15 +204,33 @@ export const screenResume = async (resumeText, jobDescription) => {
           "Detailed gap 1",
           "Detailed gap 2"
         ],
-        "recommendations": [
-          "Specific recommendation 1",
-          "Specific recommendation 2"
+        "development_areas": [
+          {
+            "area": "Specific skill or capability",
+            "importance": "high/medium/low",
+            "development_suggestion": "Specific actionable suggestion"
+          }
         ],
+        "recommendations": {
+  "recruiter_insights": [
+    "Recommendation on whether to proceed to interview (e.g., strong match, moderate match, not a fit)",
+    "Suggestions on areas to probe further during the interview",
+    "Comments on candidate's team fit, leadership potential, or ramp-up needs"
+  ],
+  "candidate_improvement_suggestions": [
+    "Specific suggestion to improve resume presentation or content",
+    "Skills or certifications that could enhance job fit in the future"
+  ]
+},
+
         "interview_questions": [
-          "Suggested question to probe gap areas",
-          "Technical validation question"
+          {
+            "question": "Suggested question to probe gap areas",
+            "purpose": "What this question aims to reveal",
+            "expected_answer_elements": ["Element 1", "Element 2"]
+          }
         ],
-        "summary": "Detailed 2-3 sentence assessment summary"
+        "summary": "Detailed 3-4 sentence assessment summary including key strengths, gaps, and ultimate recommendation"
       }
       
       RESUME TEXT:
@@ -214,7 +253,7 @@ export const screenResume = async (resumeText, jobDescription) => {
     });
 
     let aiResponse = response.data.candidates[0]?.content?.parts[0]?.text;
-    
+
     if (!aiResponse) {
       throw new Error("Empty response from Gemini API");
     }

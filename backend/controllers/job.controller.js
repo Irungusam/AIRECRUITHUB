@@ -88,7 +88,10 @@ export const getAllJobs = async (req, res) => {
     };
 
     const jobs = await Job.find(query)
-      .populate({ path: "company", select: "name logo location" })
+      .populate({
+        path: "company",
+        select: "name logo location website description",
+      })
       .sort({ createdAt: -1 });
 
     if (!jobs.length) {
@@ -105,12 +108,86 @@ export const getAllJobs = async (req, res) => {
   }
 };
 
+// Add this function to job.controller.js
+
+export const updateJob = async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const userId = req.id;
+    const {
+      title,
+      description,
+      requirements,
+      salary,
+      location,
+      jobType,
+      experience,
+      position,
+      companyId,
+    } = req.body;
+
+    // Find the job first to verify it exists and belongs to this admin
+    const existingJob = await Job.findOne({ 
+      _id: jobId,
+      created_by: userId 
+    });
+
+    if (!existingJob) {
+      return res.status(404).json({
+        message: "Job not found or you don't have permission to edit it.",
+        success: false,
+      });
+    }
+
+    // Process requirements - handle both string and array formats
+    let processedRequirements = requirements;
+    if (typeof requirements === 'string') {
+      processedRequirements = requirements.split(',');
+    }
+
+    // Update the job with new values
+    const updatedJob = await Job.findByIdAndUpdate(
+      jobId,
+      {
+        title,
+        description,
+        requirements: processedRequirements,
+        salary: Number(salary),
+        location,
+        jobType,
+        experienceLevel: experience,
+        position,
+        company: companyId,
+      },
+      { new: true, runValidators: true }
+    ).populate({
+      path: "company",
+      select: "name logo location website description",
+    });
+
+    return res.status(200).json({
+      message: "Job updated successfully.",
+      job: updatedJob,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error updating job:", error);
+    return res.status(500).json({
+      message: "An error occurred while updating the job.",
+      success: false,
+    });
+  }
+};
+
 // Job Seeker
 export const getJobById = async (req, res) => {
   try {
     const jobId = req.params.id;
     const job = await Job.findById(jobId)
-      .populate({ path: "company", select: "name logo location" })
+      .populate({
+        path: "company",
+        select: "name logo location website description",
+      })
       .populate({ path: "applications" });
     if (!job) {
       return res.status(404).json({

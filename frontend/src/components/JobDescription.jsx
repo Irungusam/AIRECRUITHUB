@@ -18,6 +18,8 @@ import {
   Clock,
   Building,
   CheckCircle,
+  Globe,
+  FileText,
 } from "lucide-react";
 
 // Simplified version without Card components
@@ -299,19 +301,75 @@ const JobDescription = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full">
-                        <Building className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+                    <>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-3 mb-4">
+                          {singleJob?.company?.logo ? (
+                            <div className="flex-shrink-0">
+                              <img
+                                src={singleJob.company.logo}
+                                alt={`${singleJob.company.name} logo`}
+                                className="h-12 w-12 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "default-company-logo.png";
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full">
+                              <Building className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+                            </div>
+                          )}
+
+                          <p className="font-medium">
+                            {singleJob?.company?.name || "Company Name"}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">
-                          {singleJob?.company?.name || "Company Name"}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {singleJob?.location}
-                        </p>
-                      </div>
-                    </div>
+
+                      {/* Company Description */}
+                      {singleJob?.company?.description && (
+                        <div className="mt-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <FileText className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              About the Company
+                            </h4>
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {singleJob.company.description}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Company Website */}
+                      {singleJob?.company?.website && (
+                        <div className="mt-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Globe className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              Website
+                            </h4>
+                          </div>
+                          <a
+                            href={
+                              singleJob.company.website.startsWith("http")
+                                ? singleJob.company.website
+                                : `https://${singleJob.company.website}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline break-all"
+                          >
+                            {singleJob.company.website.replace(
+                              /^https?:\/\//,
+                              ""
+                            )}
+                          </a>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

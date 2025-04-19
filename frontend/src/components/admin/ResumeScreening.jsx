@@ -103,29 +103,43 @@ const ResumeScreening = () => {
     }
   };
 
-  // Helper function to render match score with color
+  // Enhanced match score rendering
   const renderMatchScore = (score) => {
     let color = "text-red-500 dark:text-red-400";
     let description = "Poor Match";
+    let suggestions =
+      "Significant gaps exist. Consider major improvements or alternative candidates.";
 
     if (score >= 80) {
       color = "text-green-600 dark:text-green-400";
       description = "Excellent Match";
+      suggestions =
+        "Highly qualified candidate. Strongly recommend for next interview round.";
     } else if (score >= 70) {
       color = "text-green-500 dark:text-green-400";
       description = "Good Match";
+      suggestions =
+        "Good fit with some minor gaps. Worth considering for interview.";
     } else if (score >= 60) {
       color = "text-yellow-500 dark:text-yellow-400";
       description = "Average Match";
+      suggestions = "Moderate fit. Review gaps carefully before proceeding.";
     } else if (score >= 50) {
       color = "text-orange-500 dark:text-orange-400";
       description = "Below Average";
+      suggestions =
+        "Significant gaps exist. Consider only if other factors compensate.";
     }
 
     return (
-      <div className="flex items-center gap-2">
-        <div className={`text-3xl font-bold ${color}`}>{score}%</div>
-        <div className={`${color} text-sm font-medium`}>{description}</div>
+      <div>
+        <div className="flex items-center gap-2">
+          <div className={`text-3xl font-bold ${color}`}>{score}%</div>
+          <div className={`${color} text-sm font-medium`}>{description}</div>
+        </div>
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs">
+          {suggestions}
+        </div>
       </div>
     );
   };
@@ -491,12 +505,88 @@ const ResumeScreening = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Match Score */}
+                {/* Quick Assessment Card */}
+                <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
+                    Quick Assessment
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <p className="text-xs text-blue-600 dark:text-blue-300">
+                        Top Strength
+                      </p>
+                      <p className="text-sm font-medium dark:text-white">
+                        {screeningResults.strengths?.[0]?.split(":")?.[0] ||
+                          "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-blue-600 dark:text-blue-300">
+                        Critical Gap
+                      </p>
+                      <p className="text-sm font-medium dark:text-white">
+                        {screeningResults.weaknesses?.[0]?.split(":")?.[0] ||
+                          "None"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-blue-600 dark:text-blue-300">
+                        Key Skill
+                      </p>
+                      <p className="text-sm font-medium dark:text-white">
+                        {screeningResults.matchDetails?.skillsMatch?.find(
+                          (s) => s.importance === "high" && s.match
+                        )?.skill || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-blue-600 dark:text-blue-300">
+                        Recommendation
+                      </p>
+                      <p className="text-sm font-medium dark:text-white">
+                        {screeningResults.matchScore >= 70
+                          ? "Interview"
+                          : screeningResults.matchScore >= 50
+                          ? "Consider"
+                          : "Reject"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Match Score - Enhanced */}
                 <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border dark:border-gray-600">
                   <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Match Score
+                    Comprehensive Match Analysis
                   </h4>
-                  {renderMatchScore(screeningResults.matchScore)}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                        Overall Match
+                      </h5>
+                      {renderMatchScore(screeningResults.matchScore)}
+                    </div>
+
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                        Career Alignment
+                      </h5>
+                      <div className="flex items-center gap-2">
+                        <div className="text-2xl font-bold">
+                          {screeningResults.careerAlignment?.score || 0}%
+                        </div>
+                        {screeningResults.candidateType ? (
+                          <span className="text-xs bg-blue-100 text-blue-600 dark:bg-blue-600/10 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">
+                            {screeningResults.candidateType}
+                          </span>
+                        ) : (
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            Not specified
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Summary */}
@@ -561,37 +651,66 @@ const ResumeScreening = () => {
                   </ul>
                 </div>
 
-                {/* Recommendations */}
-                <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border dark:border-gray-600">
-                  <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Recommendations
-                  </h4>
-                  <ul className="space-y-1">
-                    {screeningResults.recommendations?.map((rec, i) => (
-                      <li key={i} className="flex items-start">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span className="dark:text-gray-300">{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Skills Match */}
+                {/* Skills Match - Enhanced */}
                 {screeningResults.matchDetails?.skillsMatch?.length > 0 && (
                   <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border dark:border-gray-600">
-                    <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Skills Matching
+                    <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Skills Analysis
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="text-sm font-medium text-indigo-500 dark:text-pink-400 mb-2">
+                          Matched Skills
+                        </h5>
+                        <div className="flex flex-wrap gap-2">
+                          {screeningResults.matchDetails.skillsMatch
+                            .filter((skill) => skill.match)
+                            .map((skill, i) => (
+                              <div key={i} className="relative group">
+                                <span className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-3 py-1 rounded-full text-xs flex items-center">
+                                  {skill.skill}
+                                  <span className="ml-1 text-xs opacity-70">
+                                    ({skill.importance})
+                                  </span>
+                                </span>
+                                {skill.evidence && (
+                                  <div className="absolute z-10 hidden group-hover:block bg-white dark:bg-gray-800 p-2 rounded shadow-lg border dark:border-gray-600 text-xs w-64">
+                                    {skill.evidence}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h5 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                          Missing Skills
+                        </h5>
+                        <div className="flex flex-wrap gap-2">
+                          {screeningResults.matchDetails.skillsMatch
+                            .filter(
+                              (skill) =>
+                                !skill.match && skill.importance === "high"
+                            )
+                            .map((skill, i) => (
+                              <span
+                                key={i}
+                                className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-3 py-1 rounded-full text-xs"
+                              >
+                                {skill.skill}
+                              </span>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Detailed Skills Table */}
+                {screeningResults.matchDetails?.skillsMatch?.length > 0 && (
+                  <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border dark:border-gray-600">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Detailed Skills Analysis
                     </h4>
                     <div className="overflow-x-auto">
                       <table className="min-w-full text-sm">
@@ -606,16 +725,34 @@ const ResumeScreening = () => {
                             <th className="p-2 text-left dark:text-gray-300">
                               Match
                             </th>
+                            <th className="p-2 text-left dark:text-gray-300">
+                              Proficiency
+                            </th>
+                            <th className="p-2 text-left dark:text-gray-300">
+                              Evidence
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
-                          {screeningResults.matchDetails.skillsMatch.map(
-                            (skill, i) => (
+                          {screeningResults.matchDetails.skillsMatch
+                            .sort((a, b) => {
+                              const importanceOrder = {
+                                high: 3,
+                                medium: 2,
+                                low: 1,
+                              };
+                              return (
+                                importanceOrder[b.importance] -
+                                  importanceOrder[a.importance] ||
+                                (b.match ? 1 : -1)
+                              );
+                            })
+                            .map((skill, i) => (
                               <tr
                                 key={i}
                                 className="border-t dark:border-gray-600"
                               >
-                                <td className="p-2 dark:text-gray-300">
+                                <td className="p-2 dark:text-gray-300 font-medium">
                                   {skill.skill}
                                 </td>
                                 <td className="p-2">
@@ -633,16 +770,239 @@ const ResumeScreening = () => {
                                 </td>
                                 <td className="p-2">
                                   {skill.match ? (
-                                    <span className="text-green-500">✓</span>
+                                    <span className="text-green-500 flex items-center">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-4 w-4 mr-1"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                      Present
+                                    </span>
                                   ) : (
-                                    <span className="text-red-500">✗</span>
+                                    <span className="text-red-500 flex items-center">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-4 w-4 mr-1"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                      Missing
+                                    </span>
                                   )}
                                 </td>
+                                <td className="p-2">
+                                  <span
+                                    className={`text-xs px-2 py-1 rounded-full ${
+                                      skill.proficiency_level === "expert"
+                                        ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                                        : skill.proficiency_level ===
+                                          "intermediate"
+                                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                                        : "bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200"
+                                    }`}
+                                  >
+                                    {skill.proficiency_level || "Unknown"}
+                                  </span>
+                                </td>
+                                <td className="p-2 text-xs text-gray-600 dark:text-gray-400 max-w-xs truncate">
+                                  {skill.evidence || "Not specified"}
+                                </td>
                               </tr>
-                            )
-                          )}
+                            ))}
                         </tbody>
                       </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Experience Match - Enhanced */}
+                {screeningResults.matchDetails?.experienceMatch?.length > 0 && (
+                  <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border dark:border-gray-600">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Experience Analysis
+                    </h4>
+                    <div className="space-y-3">
+                      {screeningResults.matchDetails.experienceMatch.map(
+                        (exp, i) => (
+                          <div key={i} className="flex items-start">
+                            {exp.matched ? (
+                              <svg
+                                className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            )}
+                            <div>
+                              <p className="text-sm font-medium dark:text-gray-200">
+                                {exp.requirement}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                                {exp.comments || "No additional comments"}
+                                {exp.years_difference !== undefined && (
+                                  <span
+                                    className={`ml-2 ${
+                                      exp.years_difference >= 0
+                                        ? "text-green-600 dark:text-green-400"
+                                        : "text-red-600 dark:text-red-400"
+                                    }`}
+                                  >
+                                    ({exp.years_difference >= 0 ? "+" : ""}
+                                    {exp.years_difference} years)
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Recommendations */}
+                <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border dark:border-gray-600">
+                  <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Recommendations
+                  </h4>
+
+                  {screeningResults.recommendations?.recruiter_insights
+                    ?.length > 0 && (
+                    <div className="mb-4">
+                      <h5 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">
+                        For Recruiter
+                      </h5>
+                      <ul className="space-y-1">
+                        {screeningResults.recommendations.recruiter_insights.map(
+                          (rec, i) => (
+                            <li
+                              key={`rec-insight-${i}`}
+                              className="flex items-start"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              <span className="dark:text-gray-300">{rec}</span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                  {screeningResults.recommendations
+                    ?.candidate_improvement_suggestions?.length > 0 && (
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">
+                        Suggestions for Candidate Improvement
+                      </h5>
+                      <ul className="space-y-1">
+                        {screeningResults.recommendations.candidate_improvement_suggestions.map(
+                          (rec, i) => (
+                            <li
+                              key={`rec-candidate-${i}`}
+                              className="flex items-start"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              <span className="dark:text-gray-300">{rec}</span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* Interview Preparation - New Section */}
+                {screeningResults.interviewQuestions?.length > 0 && (
+                  <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border dark:border-gray-600">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Suggested Interview Questions
+                    </h4>
+                    <div className="space-y-3">
+                      {screeningResults.interviewQuestions
+                        .slice(0, 3)
+                        .map((q, i) => (
+                          <div
+                            key={i}
+                            className="p-3 bg-gray-50 dark:bg-gray-600 rounded-lg"
+                          >
+                            <p className="font-medium dark:text-gray-200">
+                              {q.question}
+                            </p>
+                            <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                              <span className="font-semibold">Purpose:</span>{" "}
+                              {q.purpose}
+                            </p>
+                            {q.expected_answer_elements?.length > 0 && (
+                              <div className="mt-2">
+                                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                  Look for:
+                                </p>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {q.expected_answer_elements.map((el, j) => (
+                                    <span
+                                      key={j}
+                                      className="bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-200 px-2 py-1 rounded text-xs"
+                                    >
+                                      {el}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                     </div>
                   </div>
                 )}

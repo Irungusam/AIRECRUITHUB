@@ -97,11 +97,11 @@ const Navbar = () => {
                     Jobs
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="/browse" className={getLinkClass("/browse")}>
                     Browse
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link to="/JobAI" className={getLinkClass("/JobAI")}>
                     <RiRobot2Fill

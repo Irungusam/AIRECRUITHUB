@@ -8,7 +8,19 @@ const categories = [
   "Frontend Developer",
   "Backend Developer",
   "FullStack Developer",
-  "Data Science",
+  "Data Scientist",
+  "Data Analyst",
+  "UX/UI Designer",
+  "Product Manager",
+  "Software Engineer",
+  "Web Developer",
+  "System Administrator",
+  "Network Engineer",
+  "Database Administrator",
+  "Cybersecurity Analyst",
+  "IT Support Specialist",
+  "Cloud Architect",
+  "Project Manager",
   "Graphic Designer",
   "Mobile App Developer",
   "DevOps Engineer",
@@ -21,16 +33,17 @@ const CategoryGrid = () => {
   const navigate = useNavigate();
 
   const searchJobHandler = useCallback(
-    (query) => {
-      dispatch(setSearchedQuery([query]));
-      navigate("/browse");
+    (category) => {
+      // Clear any existing filters and set only the category filter
+      dispatch(setSearchedQuery([category]));
+      navigate("/jobs");
     },
     [dispatch, navigate]
   );
 
   return (
     <div className="max-w-2xl mx-auto my-16 px-6">
-      <h2 className="text-2xl font-semibold text-center mb-6">
+      <h2 className="text-2xl font-semibold text-center mb-6 text-blue-600 dark:text-blue-400">
         Explore Job Categories
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">

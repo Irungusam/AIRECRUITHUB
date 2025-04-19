@@ -5,18 +5,19 @@ import { parseResume, screenResume } from "../utils/gemini.js";
  * Resume Upload Handler
  * Extracts text from the uploaded PDF and sends it to AI for parsing.
  */
-// In resumeController.js
 export const uploadResume = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ success: false, message: "No file uploaded" });
+      return res
+        .status(400)
+        .json({ success: false, message: "No file uploaded" });
     }
-    
+
     // Add file type validation
-    if (!req.file.mimetype || !req.file.mimetype.includes('pdf')) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid file format. Please upload PDF files only." 
+    if (!req.file.mimetype || !req.file.mimetype.includes("pdf")) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid file format. Please upload PDF files only.",
       });
     }
 
@@ -24,7 +25,7 @@ export const uploadResume = async (req, res) => {
     if (req.file.size > 5 * 1024 * 1024) {
       return res.status(400).json({
         success: false,
-        message: "File too large. Maximum size is 5MB."
+        message: "File too large. Maximum size is 5MB.",
       });
     }
 
@@ -33,11 +34,12 @@ export const uploadResume = async (req, res) => {
     try {
       const parsedPDF = await pdfParse(pdfBuffer);
       const extractedText = parsedPDF.text.trim();
-      
+
       if (!extractedText || extractedText.length < 100) {
         return res.status(400).json({
           success: false,
-          message: "Could not extract sufficient text from PDF. The file may be scanned or protected."
+          message:
+            "Could not extract sufficient text from PDF. The file may be scanned or protected.",
         });
       }
 
@@ -53,18 +55,21 @@ export const uploadResume = async (req, res) => {
       console.error("PDF parsing error:", pdfError);
       return res.status(400).json({
         success: false,
-        message: "Failed to parse PDF. Please check if the file is valid."
+        message: "Failed to parse PDF. Please check if the file is valid.",
       });
     }
   } catch (error) {
     console.error("Upload error:", error);
-    res.status(500).json({ success: false, message: "Server error while processing resume" });
+    res.status(500).json({
+      success: false,
+      message: "Server error while processing resume",
+    });
   }
 };
 
 /**
  * Resume Screening Handler
- * Compares the resume with a job description using AI.
+ * Compares the resume with a job description using AI with enhanced analysis.
  */
 export const screenJobApplication = async (req, res) => {
   try {
@@ -78,6 +83,7 @@ export const screenJobApplication = async (req, res) => {
 
     const screeningResult = await screenResume(resumeText, jobDescription);
 
+    // Enhanced response structure with more detailed analysis
     res.json({
       success: true,
       matchScore: screeningResult.match_score || 0,
@@ -85,15 +91,29 @@ export const screenJobApplication = async (req, res) => {
         skillsMatch: screeningResult.skills_match || [],
         experienceMatch: screeningResult.experience_match || [],
         educationMatch: screeningResult.education_match || [],
+        keywordAnalysis: screeningResult.keyword_analysis || {
+          jobKeywords: [],
+          resumeKeywords: [],
+          missingKeywords: [],
+          keywordMatchPercentage: 0,
+        },
       },
       strengths: screeningResult.strengths || [],
       weaknesses: screeningResult.gaps || [],
       recommendations: screeningResult.recommendations || [],
       summary: screeningResult.summary || "",
+      // New fields for enhanced analysis
+      careerAlignment: screeningResult.career_alignment || {
+        score: 0,
+        analysis: "Not analyzed",
+        potentialGrowth: [],
+      },
+      interviewQuestions: screeningResult.interview_questions || [],
+      candidateType: screeningResult.candidate_type || "Not determined",
+      developmentAreas: screeningResult.development_areas || [],
     });
   } catch (error) {
     console.error("Screening error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
