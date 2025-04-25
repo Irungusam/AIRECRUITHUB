@@ -28,6 +28,7 @@ const Companies = () => {
     }, 300),
     [dispatch]
   );
+  
 
   const handleSearchChange = (e) => {
     const value = e.target.value;

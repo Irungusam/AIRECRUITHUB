@@ -343,7 +343,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                 <Input
                   id="location"
                   name="location"
-                  placeholder="City, State/Country"
+                  placeholder="City, Country"
                   value={input.location}
                   onChange={changeEventHandler}
                   className="col-span-3"
@@ -418,7 +418,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                 </Label>
                 <Input
                   id="desiredSalary"
-                  placeholder="e.g. $80,000 - $100,000"
+                  placeholder="e.g. Ksh80,000 - Ksh100,000"
                   value={input.jobPreferences.desiredSalary}
                   onChange={(e) =>
                     handleJobPreferenceChange("desiredSalary", e.target.value)
@@ -437,7 +437,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                 </Label>
                 <Input
                   id="desiredLocation"
-                  placeholder="e.g. San Francisco, CA"
+                  placeholder="e.g. Nairobi, Kenya"
                   value={input.jobPreferences.desiredLocation}
                   onChange={(e) =>
                     handleJobPreferenceChange("desiredLocation", e.target.value)
@@ -736,7 +736,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                   </Label>
                   <Input
                     id="institution"
-                    placeholder="e.g. Stanford University"
+                    placeholder="e.g. Meru University"
                     value={currentEducation.institution}
                     onChange={(e) =>
                       setCurrentEducation({

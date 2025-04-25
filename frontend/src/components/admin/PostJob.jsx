@@ -320,6 +320,7 @@ const PostJob = () => {
                 name="experience"
                 value={input.experience}
                 onChange={changeEventHandler}
+                min="0"
                 className="focus:outline-none focus:ring-2 focus:ring-indigo-600 w-full my-1 px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 required
               />
@@ -333,6 +334,7 @@ const PostJob = () => {
                 name="position"
                 value={input.position}
                 onChange={changeEventHandler}
+                min="0"
                 className="focus:outline-none focus:ring-2 focus:ring-indigo-600 w-full my-1 px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 required
               />
@@ -367,9 +369,7 @@ const PostJob = () => {
           </div>
 
           {isEditMode && (
-            <div className="mt-6 text-sm text-gray-600 dark:text-gray-400">
-              
-            </div>
+            <div className="mt-6 text-sm text-gray-600 dark:text-gray-400"></div>
           )}
 
           {loading ? (

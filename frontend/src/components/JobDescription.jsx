@@ -212,7 +212,10 @@ const JobDescription = () => {
                             Experience
                           </p>
                           <p className="font-medium">
-                            {singleJob?.experienceLevel ?? 0} Years
+                            {singleJob?.experienceLevel ?? 0}{" "}
+                            {singleJob?.experienceLevel === 1
+                              ? "Year"
+                              : "Years"}
                           </p>
                         </div>
                       </div>

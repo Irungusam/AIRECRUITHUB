@@ -88,7 +88,7 @@ const Navbar = () => {
                     to="/admin/resume-screen"
                     className={getLinkClass("/admin/resume-screen")}
                   >
-                    AI Screening
+                    Resume Screen
                   </Link>
                 </li>
               </>
