@@ -10,7 +10,7 @@ const jobSlice = createSlice({
     allAppliedJobs: [],
     searchedQuery: [],
     filters: {
-      categories: [],
+      // Added new filter structure while maintaining old ones
       locations: [],
       jobTypes: [],
       salaryRanges: [],
@@ -35,30 +35,27 @@ const jobSlice = createSlice({
     setSearchedQuery: (state, action) => {
       state.searchedQuery = action.payload;
     },
-    setCategoryFilters: (state, action) => {
-      state.filters.categories = action.payload;
-    },
+    // New filter actions (optional)
     setLocationFilters: (state, action) => {
       state.filters.locations = action.payload;
     },
-    setJobTypeFilters: (state, action) => {
-      state.filters.jobTypes = action.payload;
+    setIndustryFilters: (state, action) => {
+      state.filters.industries = action.payload;
     },
     setSalaryFilters: (state, action) => {
       state.filters.salaryRanges = action.payload;
     },
-    clearFilters: (state) => {
-      state.filters = {
-        categories: [],
-        locations: [],
-        jobTypes: [],
-        salaryRanges: [],
-      };
-      state.searchedQuery = [];
+    // Add new reducer for deleting a job
+    removeJob: (state, action) => {
+      state.allAdminJobs = state.allAdminJobs.filter(
+        (job) => job._id !== action.payload
+      );
+      state.allJobs = state.allJobs.filter((job) => job._id !== action.payload);
     },
   },
 });
 
+// Maintain original exports and add the new action
 export const {
   setAllJobs,
   setSingleJob,
@@ -66,11 +63,10 @@ export const {
   setSearchJobByText,
   setAllAppliedJobs,
   setSearchedQuery,
-  setCategoryFilters,
   setLocationFilters,
-  setJobTypeFilters,
+  setIndustryFilters,
   setSalaryFilters,
-  clearFilters,
+  removeJob, // Export the new action
 } = jobSlice.actions;
 
 export default jobSlice.reducer;

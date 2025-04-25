@@ -97,14 +97,14 @@ const Home = () => {
         ></div>
       </div>
 
-      {/* Latest Jobs */}
-      <div ref={latestJobsRef} className="opacity-0 pt-10 pb-10">
-        <LatestJobs />
+      {/* Category Carousel */}
+      <div ref={categoryRef} className="opacity-0 pt-10 pb-0">
+        <CategoryCarousel />
       </div>
 
-      {/* Category Carousel */}
-      <div ref={categoryRef} className="opacity-0 pt-10 pb-10">
-        <CategoryCarousel />
+      {/* Latest Jobs */}
+      <div ref={latestJobsRef} className="opacity-0 pt-0 pb-10">
+        <LatestJobs />
       </div>
 
       {/* Footer */}

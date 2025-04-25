@@ -222,3 +222,37 @@ export const getAdminJobs = async (req, res) => {
     console.log(error);
   }
 };
+
+export const deleteJob = async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const userId = req.id;
+
+    // Find the job first to verify it exists and belongs to this admin
+    const existingJob = await Job.findOne({
+      _id: jobId,
+      created_by: userId,
+    });
+
+    if (!existingJob) {
+      return res.status(404).json({
+        message: "Job not found or you don't have permission to delete it.",
+        success: false,
+      });
+    }
+
+    // Delete the job
+    await Job.findByIdAndDelete(jobId);
+
+    return res.status(200).json({
+      message: "Job deleted successfully.",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    return res.status(500).json({
+      message: "An error occurred while deleting the job.",
+      success: false,
+    });
+  }
+};

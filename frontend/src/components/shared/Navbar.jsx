@@ -1,15 +1,15 @@
-import React, { useContext } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Button } from '../ui/button';
-import { Avatar, AvatarImage } from '../ui/avatar';
-import { LogOut, Moon, Sun, User2 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
-import { USER_API_END_POINT } from '@/utils/constant';
-import { setUser } from '@/redux/authSlice';
-import { toast } from 'sonner';
-import { ThemeContext } from '@/ThemeProvider';
+import React, { useContext } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/button";
+import { Avatar, AvatarImage } from "../ui/avatar";
+import { LogOut, Moon, Sun, User2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { USER_API_END_POINT } from "@/utils/constant";
+import { setUser } from "@/redux/authSlice";
+import { toast } from "sonner";
+import { ThemeContext } from "@/ThemeProvider";
 import { useLocation } from "react-router-dom";
 // import { IoIosNotifications } from "react-icons/io";
 // import { FaBell } from "react-icons/fa6";
@@ -22,26 +22,33 @@ const Navbar = () => {
 
   const logoutHandler = async () => {
     try {
-      const res = await axios.get(`${USER_API_END_POINT}/logout`, { withCredentials: true });
+      const res = await axios.get(`${USER_API_END_POINT}/logout`, {
+        withCredentials: true,
+      });
       if (res.data.success) {
         dispatch(setUser(null));
-        navigate('/');
+        navigate("/");
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.error('Logout error:', error);
-      toast.error(error?.response?.data?.message || 'Logout failed, please try again.');
+      console.error("Logout error:", error);
+      toast.error(
+        error?.response?.data?.message || "Logout failed, please try again."
+      );
     }
   };
 
-  const avatarUrl = user?.profile?.profilePhoto || user?._json?.picture || '/default-avatar-url.jpg';
+  const avatarUrl =
+    user?.profile?.profilePhoto ||
+    user?._json?.picture ||
+    "/default-avatar-url.jpg";
 
-   const getLinkClass = (path) =>
-     `text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition duration-300 ${
-       location.pathname === path
-         ? "text-blue-600 dark:text-blue-400 font-semibold border-b-2 border-blue-600 dark:border-blue-400"
-         : ""
-     }`;
+  const getLinkClass = (path) =>
+    `text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition duration-300 ${
+      location.pathname === path
+        ? "text-blue-600 dark:text-blue-400 font-semibold border-b-2 border-blue-600 dark:border-blue-400"
+        : ""
+    }`;
 
   return (
     <div className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 dark:from-gray-800 dark:via-gray-900 dark:to-black border-b border-gray-200 dark:border-gray-700 shadow-sm">
@@ -104,13 +111,16 @@ const Navbar = () => {
                 </li> */}
                 <li>
                   <Link to="/JobAI" className={getLinkClass("/JobAI")}>
-                    <RiRobot2Fill
-                      className={`text-2xl transition duration-300 ${
-                        location.pathname === "/JobAI"
-                          ? "text-blue-600 dark:text-blue-400"
-                          : ""
-                      }`}
-                    />
+                    <div className="flex items-center gap-2">
+                      <RiRobot2Fill
+                        className={`text-2xl transition duration-300 ${
+                          location.pathname === "/JobAI"
+                            ? "text-blue-600 dark:text-blue-400"
+                            : ""
+                        }`}
+                      />
+                      <span>Chatbot</span>
+                    </div>
                   </Link>
                 </li>
               </>
